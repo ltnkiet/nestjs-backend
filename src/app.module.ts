@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ServiceModule } from './module/service.module';
 import { ConfigModule } from '@nestjs/config';
 import { AppConfig, appConfig } from '@config/app.config';
+import { IndexModule } from '@module/index.module';
 
 @Module({
     imports: [
@@ -16,7 +16,7 @@ import { AppConfig, appConfig } from '@config/app.config';
                 };
             },
         }),
-        ServiceModule,
+        IndexModule,
     ],
     controllers: [],
     providers: [],

@@ -12,7 +12,8 @@
         "baseUrl": "./src",
         "paths": {
             "@config/*": ["config/*"],
-            "@module/*": ["module/*"]
+            "@module/*": ["module/*"],
+            "@repository/*": ["repository/*"]
         },
         "incremental": true,
         "skipLibCheck": true,
@@ -21,5 +22,7 @@
         "strictBindCallApply": false,
         "forceConsistentCasingInFileNames": false,
         "noFallthroughCasesInSwitch": false
-    }
+    },
+    "include": ["src/**/*", "webpack-hmr.config.js"],
+    "exclude": ["node_modules"]
 }
