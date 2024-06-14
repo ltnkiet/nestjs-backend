@@ -14,7 +14,7 @@ export class Shop {
     name: string;
 
     @Prop({ unique: true, trim: true })
-    email: number;
+    email: string;
 
     @Prop({ require: true })
     password: string;
