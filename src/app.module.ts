@@ -18,7 +18,5 @@ import { IndexModule } from '@module/index.module';
         }),
         IndexModule,
     ],
-    controllers: [],
-    providers: [],
 })
 export class AppModule {}

@@ -13,6 +13,7 @@
         "paths": {
             "@config/*": ["config/*"],
             "@module/*": ["module/*"],
+            "@core/*": ["core/*"],
             "@repository/*": ["repository/*"]
         },
         "incremental": true,

@@ -1,6 +1,5 @@
-
 class CreateKeyDto {
-    shopId: string
+    shopId: any
     publicKey: string
     privateKey: string
     refreshToken: string

@@ -1,14 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AccessRepository } from '../repository/access.repository';
+import { AccessRepository } from '@module/access/repository/access.repository';
 import { KeyService } from '@module/key/service/key.service';
 import { Shop, ShopDocument } from '@module/shop/schema/shop.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { compare, hash } from 'bcrypt';
-import { RegisterShopDto } from '@module/shop/dto/shop.dto';
+import { LoginShopDto, RegisterShopDto } from '@module/shop/dto/shop.dto';
 import * as crypto from 'crypto';
 import { CreateKeyDto } from '@module/key/dto/key.dto';
-import { CreateTokenDto } from '../dto/access.dto';
+import { CreateTokenDto, RefreshTokenDto } from '@module/access/dto/access.dto';
+import { JwtService } from '@nestjs/jwt';
+import { BaseResult } from 'core/base.result';
 
 enum ROLES {
     Shop = 'SHOP',
@@ -28,11 +30,12 @@ export class AccessService {
     ) {}
 
     async register(shopData: RegisterShopDto) {
+        const result = new BaseResult();
         const holderShop = await this.ShopModel.findOne({
             email: shopData.email,
         }).lean();
         if (holderShop) {
-            throw new HttpException('Shop alreay', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Shop already', HttpStatus.BAD_REQUEST);
         }
 
         const hashPass = await hash(shopData.password, 10);
@@ -48,7 +51,7 @@ export class AccessService {
             const publicKey = crypto.randomBytes(64).toString('hex');
 
             const keyDto: CreateKeyDto = {
-                shopId: newShop._id.toString(),
+                shopId: newShop._id,
                 publicKey,
                 privateKey,
                 refreshToken: '',
@@ -61,7 +64,7 @@ export class AccessService {
                 );
             }
 
-            const createTokenDto: CreateTokenDto = {
+            const tokenDto: CreateTokenDto = {
                 payload: {
                     shopId: newShop._id,
                     email: shopData.email,
@@ -70,9 +73,76 @@ export class AccessService {
                 privateKey,
             };
             const tokens =
-                await this.accessRepository.createTokenPair(createTokenDto);
+                await this.accessRepository.createTokenPair(tokenDto);
 
-            return { newShop, tokens };
+            result.data = { newShop, tokens };
+            return result;
+        }
+    }
+
+    async login(shopData: LoginShopDto) {
+        const result = new BaseResult()
+
+        const foundShop = await this.ShopModel.findOne({
+            email: shopData.email,
+        }).lean();
+        if (!foundShop) {
+            throw new HttpException(
+                'Shop is not registed',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        const matchPass = compare(shopData.password, foundShop.password);
+        if (!matchPass) {
+            throw new HttpException(
+                'Password is not correct',
+                HttpStatus.UNAUTHORIZED,
+            );
+        }
+
+        const privateKey = crypto.randomBytes(64).toString('hex');
+        const publicKey = crypto.randomBytes(64).toString('hex');
+
+        const { _id: shopId } = foundShop;
+        const tokenDto: CreateTokenDto = {
+            payload: {
+                shopId,
+                email: shopData.email,
+            },
+            publicKey,
+            privateKey,
+        };
+        const token = await this.accessRepository.createTokenPair(tokenDto);
+
+        const keyDto: CreateKeyDto = {
+            shopId,
+            privateKey,
+            publicKey,
+            refreshToken: token.refreshToken,
+        };
+        await this.keyService.createKey(keyDto);
+
+        result.data = { foundShop, token };
+        return result
+    }
+
+    async logout(_id: any) {
+        const delKey = await this.keyService.deleteKeyById(_id);
+        return delKey;
+    }
+
+    async handleRefreshToken(tokenDto: RefreshTokenDto) {
+        const { shopId, email } = tokenDto.shop;
+
+        if (
+            tokenDto.keyStore.refreshTokenUsed.includes(tokenDto.refreshToken)
+        ) {
+            await this.keyService.deleteKeyById(shopId);
+            throw new HttpException(
+                'Something went wrong',
+                HttpStatus.FORBIDDEN,
+            );
         }
     }
 }

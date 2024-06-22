@@ -27,4 +27,8 @@ export class KeyService {
 
         return keys ? keys.publicKey : null;
     }
+
+    async deleteKeyById(_id: any) {
+        return await this.KeyModel.deleteOne({ _id });
+    }
 }

@@ -4,4 +4,10 @@ class CreateTokenDto {
     privateKey: string;
 }
 
-export { CreateTokenDto }
+class RefreshTokenDto {
+    refreshToken: string
+    shop: any
+    keyStore: any
+}
+
+export { CreateTokenDto, RefreshTokenDto }
