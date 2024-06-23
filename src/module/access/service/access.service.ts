@@ -1,4 +1,13 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+    ForbiddenException,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+    UnauthorizedException,
+    UnprocessableEntityException,
+} from '@nestjs/common';
 import { AccessRepository } from '@module/access/repository/access.repository';
 import { KeyService } from '@module/key/service/key.service';
 import { Shop, ShopDocument } from '@module/shop/schema/shop.schema';
@@ -9,7 +18,6 @@ import { LoginShopDto, RegisterShopDto } from '@module/shop/dto/shop.dto';
 import * as crypto from 'crypto';
 import { CreateKeyDto } from '@module/key/dto/key.dto';
 import { CreateTokenDto, RefreshTokenDto } from '@module/access/dto/access.dto';
-import { JwtService } from '@nestjs/jwt';
 import { BaseResult } from 'core/base.result';
 
 enum ROLES {
@@ -31,15 +39,15 @@ export class AccessService {
 
     async register(shopData: RegisterShopDto) {
         const result = new BaseResult();
+
         const holderShop = await this.ShopModel.findOne({
             email: shopData.email,
         }).lean();
         if (holderShop) {
-            throw new HttpException('Shop already', HttpStatus.BAD_REQUEST);
+            throw new ForbiddenException('Shop already exist');
         }
 
         const hashPass = await hash(shopData.password, 10);
-
         const newShop = await this.ShopModel.create({
             ...shopData,
             password: hashPass,
@@ -58,10 +66,7 @@ export class AccessService {
             };
             const keyStore = await this.keyService.createKey(keyDto);
             if (!keyStore) {
-                throw new HttpException(
-                    'KeyStore Error',
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new UnauthorizedException('KeyStore Error');
             }
 
             const tokenDto: CreateTokenDto = {
@@ -81,23 +86,19 @@ export class AccessService {
     }
 
     async login(shopData: LoginShopDto) {
-        const result = new BaseResult()
+        const result = new BaseResult();
 
         const foundShop = await this.ShopModel.findOne({
             email: shopData.email,
         }).lean();
         if (!foundShop) {
-            throw new HttpException(
-                'Shop is not registed',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new UnauthorizedException('Shop is not registed');
         }
 
-        const matchPass = compare(shopData.password, foundShop.password);
+        const matchPass = await compare(shopData.password, foundShop.password);
         if (!matchPass) {
-            throw new HttpException(
-                'Password is not correct',
-                HttpStatus.UNAUTHORIZED,
+            throw new UnauthorizedException(
+                'Password is not correct'
             );
         }
 
@@ -124,7 +125,7 @@ export class AccessService {
         await this.keyService.createKey(keyDto);
 
         result.data = { foundShop, token };
-        return result
+        return result;
     }
 
     async logout(_id: any) {

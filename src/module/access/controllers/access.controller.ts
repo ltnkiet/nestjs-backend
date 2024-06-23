@@ -1,14 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Patch,
-    Post,
-    Res,
-    UseFilters,
-} from '@nestjs/common';
+import { Body, Controller, Post, Res, UseFilters } from '@nestjs/common';
 
 import { AccessService } from '@module/access/service/access.service';
 import { LoginShopDto, RegisterShopDto } from '@module/shop/dto/shop.dto';
@@ -29,27 +19,45 @@ import { Shop } from '@module/shop/schema/shop.schema';
 export class AccessController {
     constructor(private readonly accessService: AccessService) {}
 
+    /**
+        REGISTER SHOP
+     */
     @Post('register')
     @ApiOkResponse({
         schema: {
             $ref: getSchemaPath(BaseResult),
             properties: {
                 data: {
-                    $ref: getSchemaPath(Shop),
+                    $ref: getSchemaPath(RegisterShopDto),
                 },
             },
         },
     })
-    Register(@Res() res, @Body() data: RegisterShopDto) {
-        const result = this.accessService.register(data);
-        return res.json(result);
+    Register(@Body() data: RegisterShopDto) {
+        return this.accessService.register(data);
     }
 
+    /**
+        LOGIN SHOP
+     */
     @Post('login')
+    @ApiOkResponse({
+        schema: {
+            $ref: getSchemaPath(BaseResult),
+            properties: {
+                data: {
+                    $ref: getSchemaPath(LoginShopDto),
+                },
+            },
+        },
+    })
     Login(@Body() data: LoginShopDto) {
         return this.accessService.login(data);
     }
 
+    /**
+        lOGOUT SHOP
+     */
     @Post('logout')
     Logout(@Body() _id: any) {
         return this.accessService.logout(_id);

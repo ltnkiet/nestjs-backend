@@ -8,12 +8,14 @@ import {
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    catch(exception: HttpException, host: ArgumentsHost) {
+    catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const res = ctx.getResponse();
+        const req = ctx.getRequest();
         const stt = exception.getStatus();
 
-        const msgs = exception.message;
+        const msgs = exception.response?.message;
+        delete exception.response;
 
         const result = Object.assign(new BaseResult(), {
             success: false,
@@ -26,6 +28,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
                       }))
                     : msgs,
             },
+            path: req.url,
         });
         res.status(stt).json(result);
     }

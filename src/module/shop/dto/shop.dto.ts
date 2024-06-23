@@ -14,7 +14,6 @@ class RegisterShopDto {
     @ApiProperty()
     password: string
 
-    @IsNotEmpty()
     @ApiProperty()
     roles: [string]
 }
