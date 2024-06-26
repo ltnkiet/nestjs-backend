@@ -1,4 +1,4 @@
-import { BaseResult } from '@core/base.result';
+import { BaseResult } from './base-result';
 import {
     ExceptionFilter,
     Catch,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateTokenDto } from '../dto/access.dto';
+import { CreateTokenDto } from './dto/access.dto';
 
 @Injectable()
 export class AccessRepository {

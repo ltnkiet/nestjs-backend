@@ -1,9 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AppConfig, appConfig } from '@config/app.config';
-import { BadRequestException, InternalServerErrorException, Logger, ValidationPipe } from '@nestjs/common';
+import {
+    InternalServerErrorException,
+    Logger,
+    ValidationPipe,
+} from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from '@config/app.filter';
 
 declare const module: any;
 
@@ -12,7 +15,8 @@ async function server() {
     app.enableCors();
     app.useGlobalPipes(
         new ValidationPipe({
-            exceptionFactory: (errors) => new InternalServerErrorException(errors),
+            exceptionFactory: (errors) =>
+                new InternalServerErrorException(errors),
         }),
     );
 
@@ -23,13 +27,12 @@ async function server() {
         .addBearerAuth({
             type: 'apiKey',
             scheme: 'JWT',
-            name: 'Authorization',
-            description: 'Type into the text box: Bearer {your JWT}',
+            name: 'authorization',
             in: 'header',
         })
         .build();
     const document = SwaggerModule.createDocument(app, doc);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('docs/api', app, document);
 
     await app.listen(cfg.port);
     Logger.log(`Server running at ${await app.getUrl()}`);

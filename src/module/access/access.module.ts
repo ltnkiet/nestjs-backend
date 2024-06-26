@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AccessController } from './controllers/access.controller';
-import { AccessService } from './service/access.service';
+import { AccessController } from './access.controller';
+import { AccessService } from './access.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { AccessRepository } from './repository/access.repository';
-import { KeyService } from '@module/key/service/key.service';
+import { AccessRepository } from './access.repository';
+import { KeyService } from '@module/key/key.service';
 import { ShopModule } from '@module/shop/shop.module';
 import { KeyModule } from '@module/key/key.module';
 import { AppConfig, appConfig } from '@config/app.config';

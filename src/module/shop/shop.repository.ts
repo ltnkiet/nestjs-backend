@@ -6,11 +6,9 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class ShopRepository {
     constructor(
-        @InjectModel(Shop.name) 
+        @InjectModel(Shop.name)
         private ShopModel: Model<ShopDocument>,
     ) {}
 
-    async findByEmail() {
-        
-    }
+    async findByEmail() {}
 }

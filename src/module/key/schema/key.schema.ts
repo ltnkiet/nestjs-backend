@@ -6,7 +6,7 @@ export type KeyDocument = HydratedDocument<Key>;
 @Schema({ collection: 'Key', timestamps: true })
 export class Key {
     @Prop({ type: Types.ObjectId, ref: 'Shop', required: true })
-    shop: string;
+    shop: any;
 
     @Prop({ required: true })
     publicKey: string;
@@ -18,7 +18,7 @@ export class Key {
     refreshToken: string;
 
     @Prop({ type: Array, default: [] })
-    refreshTokenUsed: string[];
+    refreshTokenUsed: Array<string>;
 }
 
 export const KeySchema = SchemaFactory.createForClass(Key);

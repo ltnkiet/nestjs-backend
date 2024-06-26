@@ -1,15 +1,10 @@
 import {
     ForbiddenException,
-    HttpException,
-    HttpStatus,
     Injectable,
-    InternalServerErrorException,
-    NotFoundException,
     UnauthorizedException,
-    UnprocessableEntityException,
 } from '@nestjs/common';
-import { AccessRepository } from '@module/access/repository/access.repository';
-import { KeyService } from '@module/key/service/key.service';
+import { AccessRepository } from '@module/access/access.repository';
+import { KeyService } from '@module/key/key.service';
 import { Shop, ShopDocument } from '@module/shop/schema/shop.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,19 +12,21 @@ import { compare, hash } from 'bcrypt';
 import { LoginShopDto, RegisterShopDto } from '@module/shop/dto/shop.dto';
 import * as crypto from 'crypto';
 import { CreateKeyDto } from '@module/key/dto/key.dto';
-import { CreateTokenDto, RefreshTokenDto } from '@module/access/dto/access.dto';
-import { BaseResult } from 'core/base.result';
-
-enum ROLES {
-    Shop = 'SHOP',
-    Writer = 'WRITER',
-    Editor = 'EDITOR',
-    Admin = 'ADMIN',
-}
+import {
+    CreateTokenDto,
+    HandleRefreshTokenDto,
+} from '@module/access/dto/access.dto';
+import { BaseResult } from '@helper/base-result';
+import { ROLES } from '@enum/role.enum';
 
 @Injectable()
 export class AccessService {
     constructor(
+        /**
+         * @description - Contructor of Access Service
+         * @param {AccessRepository} accessRepository - the Access Repository instance
+         * @param {KeyService} keyService - the Key Service instance
+         */
         private readonly accessRepository: AccessRepository,
         private readonly keyService: KeyService,
 
@@ -37,8 +34,13 @@ export class AccessService {
         private ShopModel: Model<ShopDocument>,
     ) {}
 
+    /**
+     * @description - register shop with the register data transfer object
+     * @param shopData - the regitser data transfer object
+     * @returns
+     */
     async register(shopData: RegisterShopDto) {
-        const result = new BaseResult();
+        const response = new BaseResult();
 
         const holderShop = await this.ShopModel.findOne({
             email: shopData.email,
@@ -80,8 +82,8 @@ export class AccessService {
             const tokens =
                 await this.accessRepository.createTokenPair(tokenDto);
 
-            result.data = { newShop, tokens };
-            return result;
+            response.data = { newShop, tokens };
+            return response;
         }
     }
 
@@ -97,9 +99,7 @@ export class AccessService {
 
         const matchPass = await compare(shopData.password, foundShop.password);
         if (!matchPass) {
-            throw new UnauthorizedException(
-                'Password is not correct'
-            );
+            throw new UnauthorizedException('Password is not correct');
         }
 
         const privateKey = crypto.randomBytes(64).toString('hex');
@@ -128,22 +128,52 @@ export class AccessService {
         return result;
     }
 
-    async logout(_id: any) {
-        const delKey = await this.keyService.deleteKeyById(_id);
+    async logout(keyStore: any) {
+        const delKey = await this.keyService.deleteKeyById(keyStore._id);
         return delKey;
     }
 
-    async handleRefreshToken(tokenDto: RefreshTokenDto) {
+    async handleRefreshToken(tokenDto: HandleRefreshTokenDto) {
+        const result = new BaseResult();
         const { shopId, email } = tokenDto.shop;
 
         if (
             tokenDto.keyStore.refreshTokenUsed.includes(tokenDto.refreshToken)
         ) {
             await this.keyService.deleteKeyById(shopId);
-            throw new HttpException(
-                'Something went wrong',
-                HttpStatus.FORBIDDEN,
-            );
+            throw new ForbiddenException('Something went wrong');
         }
+
+        if (tokenDto.keyStore.refreshToken !== tokenDto.refreshToken) {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        const foundShop = await this.ShopModel.findOne({ email }).lean();
+        if (!foundShop) throw new UnauthorizedException('Shop not registered');
+
+        const payload: CreateTokenDto = {
+            payload: {
+                shopId,
+                email,
+            },
+            publicKey: tokenDto.keyStore.publicKey,
+            privateKey: tokenDto.keyStore.privateKey,
+        };
+        const tokens = await this.accessRepository.createTokenPair(payload);
+
+        await this.keyService.updateKeyById(tokenDto.keyStore._id, {
+            $set: {
+                refreshToken: tokens.refreshToken,
+            },
+            $addToSet: {
+                refreshTokenUsed: tokenDto.refreshToken,
+            },
+        });
+
+        result.data = {
+            shop: tokenDto.shop,
+            tokens,
+        };
+        return result;
     }
 }

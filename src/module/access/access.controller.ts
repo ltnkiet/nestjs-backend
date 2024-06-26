@@ -1,16 +1,31 @@
-import { Body, Controller, Post, Res, UseFilters } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Post,
+    Req,
+    UseFilters,
+    UseGuards,
+    UseInterceptors,
+    Headers,
+} from '@nestjs/common';
 
-import { AccessService } from '@module/access/service/access.service';
+import { AccessService } from '@module/access/access.service';
 import { LoginShopDto, RegisterShopDto } from '@module/shop/dto/shop.dto';
 import {
+    ApiBearerAuth,
     ApiExtraModels,
+    ApiHeader,
     ApiOkResponse,
+    ApiResponse,
     ApiTags,
     getSchemaPath,
 } from '@nestjs/swagger';
-import { BaseResult } from '@core/base.result';
-import { HttpExceptionFilter } from '@config/app.filter';
+import { BaseResult } from '@helper/base-result';
+import { HttpExceptionFilter } from '@helper/exception-filter';
 import { Shop } from '@module/shop/schema/shop.schema';
+import { EncodeDataInterceptor } from 'interceptor/encode-data';
+import { AuthGuard } from './guard/auth.guard';
+import { HandleRefreshTokenDto } from './dto/access.dto';
 
 @ApiTags('Access')
 @UseFilters(HttpExceptionFilter)
@@ -19,9 +34,6 @@ import { Shop } from '@module/shop/schema/shop.schema';
 export class AccessController {
     constructor(private readonly accessService: AccessService) {}
 
-    /**
-        REGISTER SHOP
-     */
     @Post('register')
     @ApiOkResponse({
         schema: {
@@ -33,6 +45,7 @@ export class AccessController {
             },
         },
     })
+    @UseInterceptors(EncodeDataInterceptor)
     Register(@Body() data: RegisterShopDto) {
         return this.accessService.register(data);
     }
@@ -59,7 +72,15 @@ export class AccessController {
         lOGOUT SHOP
      */
     @Post('logout')
-    Logout(@Body() _id: any) {
-        return this.accessService.logout(_id);
+    @UseGuards(AuthGuard)
+    Logout(@Req() keyStore: any) {
+        return this.accessService.logout(keyStore);
+    }
+
+    @Post('handle-refreshtoken')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
+    HandleRefreshToken(@Req() data) {
+        return this.accessService.handleRefreshToken(data);
     }
 }

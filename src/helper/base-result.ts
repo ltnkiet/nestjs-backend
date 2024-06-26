@@ -9,5 +9,4 @@ export class BaseResult<T> {
 
     @ApiProperty()
     success: boolean = true
-
 }

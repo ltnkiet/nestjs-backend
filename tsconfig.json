@@ -13,8 +13,12 @@
         "paths": {
             "@config/*": ["config/*"],
             "@module/*": ["module/*"],
-            "@core/*": ["core/*"],
-            "@repository/*": ["repository/*"]
+            "@helper/*": ["helper/*"],
+            "@enum/*": ["enum/*"],
+            "@interface/*": ["interface/*"],
+            "@decorator/*": ["decorator/*"],
+
+
         },
         "incremental": true,
         "skipLibCheck": true,
