@@ -10,7 +10,7 @@ const { ObjectId } = Types;
 export class KeyService {
     constructor(
         @InjectModel(Key.name)
-        private KeyModel: Model<KeyDocument>,
+        public KeyModel: Model<KeyDocument>,
     ) {}
 
     async createKey(keyDto: CreateKeyDto) {

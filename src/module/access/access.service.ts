@@ -40,7 +40,7 @@ export class AccessService {
      * @returns
      */
     async register(shopData: RegisterShopDto) {
-        const response = new BaseResult();
+        const result = new BaseResult();
 
         const holderShop = await this.ShopModel.findOne({
             email: shopData.email,
@@ -82,8 +82,8 @@ export class AccessService {
             const tokens =
                 await this.accessRepository.createTokenPair(tokenDto);
 
-            response.data = { newShop, tokens };
-            return response;
+            result.data = { newShop, tokens };
+            return result;
         }
     }
 

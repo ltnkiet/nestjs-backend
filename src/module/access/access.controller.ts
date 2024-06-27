@@ -24,7 +24,7 @@ import { BaseResult } from '@helper/base-result';
 import { HttpExceptionFilter } from '@helper/exception-filter';
 import { Shop } from '@module/shop/schema/shop.schema';
 import { EncodeDataInterceptor } from 'interceptor/encode-data';
-import { AuthGuard } from './guard/auth.guard';
+import { AuthGuard } from '@guard/auth.guard';
 import { HandleRefreshTokenDto } from './dto/access.dto';
 
 @ApiTags('Access')
@@ -73,14 +73,14 @@ export class AccessController {
      */
     @Post('logout')
     @UseGuards(AuthGuard)
-    Logout(@Req() keyStore: any) {
+    Logout(@Req() keyStore) {
         return this.accessService.logout(keyStore);
     }
 
     @Post('handle-refreshtoken')
     @ApiBearerAuth()
     @UseGuards(AuthGuard)
-    HandleRefreshToken(@Req() data) {
+    HandleRefreshToken(@Req() data: HandleRefreshTokenDto) {
         return this.accessService.handleRefreshToken(data);
     }
 }

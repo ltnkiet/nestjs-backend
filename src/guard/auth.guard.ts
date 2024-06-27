@@ -50,7 +50,6 @@ export class AuthGuard implements CanActivate {
         }
 
         const accessToken = request.headers[HEADER.AUTHORIZATION];
-        console.log(accessToken)
         if (!accessToken) {
             throw new UnauthorizedException('Invalid Token');
         }

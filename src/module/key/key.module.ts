@@ -13,6 +13,6 @@ import { KeyService } from './key.service';
         ]),
     ],
     providers: [KeyService],
-    exports: [MongooseModule],
+    exports: [MongooseModule, KeyModule, KeyService],
 })
 export class KeyModule {}
