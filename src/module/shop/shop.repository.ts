@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Shop, ShopDocument } from '@module/shop/schema/shop.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+const { ObjectId } = Types;
 
 @Injectable()
 export class ShopRepository {
@@ -10,5 +11,7 @@ export class ShopRepository {
         private ShopModel: Model<ShopDocument>,
     ) {}
 
-    async findByEmail() {}
+    async findById(id: any) {
+        return await this.ShopModel.findOne({ _id: new ObjectId(id) });
+    }
 }

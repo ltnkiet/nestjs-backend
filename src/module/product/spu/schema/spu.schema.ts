@@ -63,9 +63,9 @@ export class SPU {
     @ApiProperty()
     product_ratingAverage: number;
 
-    @Prop({ type: [String], default: [] })
+    @Prop({ type: Array, default: [] })
     @ApiProperty()
-    product_variation: Array<string>;
+    product_variation: Array<any>;
     /*
         tier_variantion: [
             {
@@ -94,8 +94,14 @@ export class SPU {
 
 export const SPUSchema = SchemaFactory.createForClass(SPU);
 
+/**
+ * SPU INDEX SEARCH
+ */
 SPUSchema.index({ product_name: 'text', product_description: 'text' });
 
+/**
+ * SPU MIDDLEWARE
+ */
 SPUSchema.pre('save', function (next) {
     this.product_slug = slugify(this.product_name, { lower: true });
     next();

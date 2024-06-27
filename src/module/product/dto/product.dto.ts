@@ -1,7 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ProductDto {
-
     @ApiProperty()
     product_name: string;
 
@@ -26,15 +25,18 @@ export class ProductDto {
     @ApiProperty()
     product_shop: string;
 
+    @ApiProperty()
     product_attributes: any;
 
     @ApiProperty()
     product_ratingAverage: number;
 
     @ApiProperty()
-    product_variation: Array<string>;
+    product_variation: Array<any>;
 
     isDraft: true;
 
     isPublished: false;
 }
+
+

@@ -1,10 +1,6 @@
 import {
     Body,
     Controller,
-    Delete,
-    Get,
-    Param,
-    Patch,
     Post,
     Req,
     UseGuards,
@@ -16,7 +12,9 @@ import { AuthGuard } from '@guard/auth.guard';
 
 @Controller('product')
 export class ProductController {
-    constructor(private readonly productService: ProductService) {}
+    constructor(
+        private readonly productService: ProductService,
+    ) {}
 
     @Post('create')
     @UseGuards(AuthGuard)
@@ -26,4 +24,5 @@ export class ProductController {
             product_shop: req.shop.shopId,
         });
     }
+
 }

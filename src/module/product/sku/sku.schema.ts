@@ -1,8 +1,6 @@
-import { Shop } from '@module/shop/schema/shop.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument, Types, SchemaTypes } from 'mongoose';
-import slugify from 'slugify';
+import { HydratedDocument} from 'mongoose';
 
 export type SKUDocument = HydratedDocument<SKU>;
 
@@ -49,8 +47,8 @@ export class SKU {
     @Prop({ default: true, index: true, select: false })
     isDraft: boolean;
 
-    @Prop({ default: true, index: true, select: false })
-    iSKUblished: boolean;
+    @Prop({ default: false, index: true, select: true })
+    isPublished: boolean;
 
     @Prop({ default: false, index: true, select: true })
     isDeleted: boolean;

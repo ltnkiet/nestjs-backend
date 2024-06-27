@@ -59,7 +59,7 @@ export class Product {
 
     @Prop({ type: [String], default: [] })
     @ApiProperty()
-    product_variation: Array<string>;
+    product_variation: Array<any>;
 
     @Prop({ default: true, index: true, select: false })
     isDraft: boolean;

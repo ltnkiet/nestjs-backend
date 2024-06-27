@@ -18,6 +18,8 @@
             "@interface/*": ["interface/*"],
             "@decorator/*": ["decorator/*"],
             "@guard/*": ["guard/*"],
+            "@utils/*": ["utils/*"],
+
         },
         "incremental": true,
         "skipLibCheck": true,

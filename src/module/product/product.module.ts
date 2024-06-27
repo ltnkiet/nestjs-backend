@@ -8,8 +8,6 @@ import {
     Product,
     ProductSchema,
 } from './schema/product.schema';
-import { SPU, SPUSchema } from './spu/spu.schema';
-import { SKU, SKUSchema } from './sku/sku.schema';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { KeyService } from '@module/key/key.service';
@@ -29,17 +27,9 @@ import { KeyModule } from '@module/key/key.module';
             {
                 name: Clothing.name,
                 schema: ClothingSchema,
-            },
-            {
-                name: SPU.name,
-                schema: SPUSchema,
-            },
-            {
-                name: SKU.name,
-                schema: SKUSchema,
-            },
+            }
         ]),
-        KeyModule,
+        KeyModule
     ],
     controllers: [ProductController],
     providers: [ProductService, KeyService],
