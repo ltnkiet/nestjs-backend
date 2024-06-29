@@ -8,8 +8,8 @@ const appConfig = registerAs('app', () => ({
         name: process.env.DATABASE_NAME,
     },
     jwt: {
-        key: process.env.JWT_KEY_SECRET
-    }
+        key: process.env.JWT_KEY_SECRET,
+    },
 }));
 
 type AppConfig = ConfigType<typeof appConfig>;

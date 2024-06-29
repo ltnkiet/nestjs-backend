@@ -1,6 +1,14 @@
-import { ProductDto } from '@module/product/dto/product.dto';
+import { CreateProductDto } from '@module/product/dto/product.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsEmpty } from 'class-validator';
 
-export class SPUDto extends ProductDto {
-    product_id: any;
-    product_variation: Array<any>;
+export class SPUDto extends CreateProductDto {
+    @ApiProperty()
+    @IsEmpty()
+    product_id: string;
+
+    @ApiProperty()
+    @IsEmpty()
+    @IsArray()
+    sku_list: Array<any>;
 }

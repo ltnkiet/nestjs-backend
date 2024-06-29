@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SPU, SPUSchema } from './schema/spu.schema';
+import { SPU, SPUSchema } from './entity/spu.schema';
 import { KeyModule } from '@module/key/key.module';
 import { SPUService } from './spu.service';
 import { ProductModule } from '../product.module';
 import { SPUController } from './spu.controller';
-import { KeyService } from '@module/key/key.service';
-import { ShopRepository } from '@module/shop/shop.repository';
-import { SKUService } from '../sku/sku.service';
 import { ShopModule } from '@module/shop/shop.module';
 import { SKUModule } from '../sku/sku.module';
+import { InventoryModule } from '@module/inventory/invent.module';
 
 @Module({
     imports: [
@@ -19,10 +17,14 @@ import { SKUModule } from '../sku/sku.module';
                 schema: SPUSchema,
             },
         ]),
-        KeyModule, ProductModule, ShopModule, SKUModule
+        KeyModule,
+        ProductModule,
+        ShopModule,
+        SKUModule,
+        InventoryModule,
     ],
     controllers: [SPUController],
-    providers: [SPUService, KeyService, ShopRepository, SKUService],
+    providers: [SPUService],
     exports: [MongooseModule, SPUService],
 })
 export class SPUModule {}

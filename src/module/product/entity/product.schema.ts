@@ -1,4 +1,4 @@
-import { Shop } from '@module/shop/schema/shop.schema';
+import { Shop } from '@module/shop/entity/shop.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Types, SchemaTypes } from 'mongoose';
@@ -46,6 +46,7 @@ export class Product {
     product_shop: string | Shop;
 
     @Prop({ type: SchemaTypes.Mixed, required: true })
+    @ApiProperty()
     product_attributes: any;
 
     @Prop({

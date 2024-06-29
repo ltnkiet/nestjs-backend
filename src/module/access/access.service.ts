@@ -3,9 +3,9 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { AccessRepository } from '@module/access/access.repository';
+import { AccessRepository } from './entity/access.repository';
 import { KeyService } from '@module/key/key.service';
-import { Shop, ShopDocument } from '@module/shop/schema/shop.schema';
+import { Shop, ShopDocument } from '@module/shop/entity/shop.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { compare, hash } from 'bcrypt';
@@ -23,7 +23,7 @@ import { ROLES } from '@enum/role.enum';
 export class AccessService {
     constructor(
         /**
-         * @description - Contructor of Access Service
+         * @description - Constructor of Access Service
          * @param {AccessRepository} accessRepository - the Access Repository instance
          * @param {KeyService} keyService - the Key Service instance
          */
@@ -36,7 +36,7 @@ export class AccessService {
 
     /**
      * @description - register shop with the register data transfer object
-     * @param shopData - the regitser data transfer object
+     * @param shopData - the register data transfer object
      * @returns
      */
     async register(shopData: RegisterShopDto) {
@@ -94,7 +94,7 @@ export class AccessService {
             email: shopData.email,
         }).lean();
         if (!foundShop) {
-            throw new UnauthorizedException('Shop is not registed');
+            throw new UnauthorizedException('Shop is not register');
         }
 
         const matchPass = await compare(shopData.password, foundShop.password);

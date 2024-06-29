@@ -8,8 +8,9 @@ import {
     ProductDocument,
     ClothingDocument,
     ElectronicDocument,
-} from './schema/product.schema';
-import { ProductDto } from './dto/product.dto';
+} from './entity/product.schema';
+import { CreateProductDto } from './dto/product.dto';
+import { InventoryRepository } from '@module/inventory/entity/invent.repository';
 
 @Injectable()
 export class ProductService {
@@ -21,11 +22,13 @@ export class ProductService {
 
     constructor(
         @InjectModel(Product.name)
-        private readonly productModel: Model<ProductDocument>,
+        private readonly ProductModel: Model<ProductDocument>,
         @InjectModel(Electronic.name)
-        private readonly electronicModel: Model<ElectronicDocument>,
+        private readonly ElectronicModel: Model<ElectronicDocument>,
         @InjectModel(Clothing.name)
-        private readonly clothingModel: Model<ClothingDocument>,
+        private readonly ClothingModel: Model<ClothingDocument>,
+
+        private readonly inventRepository: InventoryRepository,
     ) {}
 
     async createProduct(type: string, payload: any) {
@@ -34,9 +37,10 @@ export class ProductService {
             throw new BadRequestException('Invalid product type ');
 
         const productInstance = new productClass(
-            this.productModel,
-            this.electronicModel,
-            this.clothingModel,
+            this.ProductModel,
+            this.ElectronicModel,
+            this.ClothingModel,
+            this.inventRepository,
             payload,
         );
 
@@ -55,24 +59,35 @@ class Products {
         @InjectModel(Clothing.name)
         protected readonly ClothingModel: Model<ClothingDocument>,
 
-        protected productDto: ProductDto,
+        protected readonly inventRepository: InventoryRepository,
+
+        protected createProductDto: CreateProductDto,
     ) {
-        this.productDto = productDto;
+        this.createProductDto = createProductDto;
     }
 
     async create(product_id: any) {
-        return await this.ProductModel.create({
+        const newProd = await this.ProductModel.create({
             _id: product_id,
-            ...this.productDto,
+            ...this.createProductDto,
         });
+        if (newProd) {
+            await this.inventRepository.insertInvent({
+                product_id: newProd._id,
+                shop_id: this.createProductDto.product_shop,
+                stock: this.createProductDto.product_quantity,
+                location: 'unknown',
+            });
+        }
+        return newProd;
     }
 }
 
 class Clothes extends Products {
     async createProduct() {
         const newClothing = await this.ClothingModel.create({
-            ...this.productDto.product_attributes,
-            product_shop: this.productDto.product_shop,
+            ...this.createProductDto.product_attributes,
+            product_shop: this.createProductDto.product_shop,
         });
         if (!newClothing)
             throw new BadRequestException('Create Clothing Error');
@@ -87,8 +102,8 @@ class Clothes extends Products {
 class Electronics extends Products {
     async createProduct() {
         const newElectronic = await this.ElectronicModel.create({
-            product_shop: this.productDto.product_shop,
-            ...this.productDto.product_attributes,
+            ...this.createProductDto.product_attributes,
+            product_shop: this.createProductDto.product_shop,
         });
         if (!newElectronic)
             throw new BadRequestException('Create Clothing Error');

@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BaseResult<T> {
     @ApiProperty()
-    error: Record<string, any>
+    error: Record<string, any>;
 
     @ApiProperty()
-    data: T
+    data: T;
 
     @ApiProperty()
-    success: boolean = true
+    success: boolean = true;
 }

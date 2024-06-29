@@ -7,11 +7,13 @@ import {
     ElectronicSchema,
     Product,
     ProductSchema,
-} from './schema/product.schema';
+} from './entity/product.schema';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
-import { KeyService } from '@module/key/key.service';
 import { KeyModule } from '@module/key/key.module';
+import { InventoryModule } from '@module/inventory/invent.module';
+import { InventoryRepository } from '@module/inventory/entity/invent.repository';
+import { MediaModule } from './media/media.module';
 
 @Module({
     imports: [
@@ -27,12 +29,14 @@ import { KeyModule } from '@module/key/key.module';
             {
                 name: Clothing.name,
                 schema: ClothingSchema,
-            }
+            },
         ]),
-        KeyModule
+        KeyModule,
+        InventoryModule,
+        MediaModule,
     ],
     controllers: [ProductController],
-    providers: [ProductService, KeyService],
+    providers: [ProductService, InventoryRepository],
     exports: [],
 })
 export class ProductModule {}

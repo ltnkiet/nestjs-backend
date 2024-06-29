@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ShopSchema, Shop } from './schema/shop.schema';
+import { ShopSchema, Shop } from './entity/shop.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ShopController } from './shop.controller';
-import { ShopRepository } from './shop.repository';
+import { ShopRepository } from './entity/shop.repository';
 
 @Module({
     imports: [

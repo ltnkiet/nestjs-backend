@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { Key, KeySchema } from './schema/key.schema';
+import { Key, KeySchema } from './entity/key.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { KeyService } from './key.service';
 

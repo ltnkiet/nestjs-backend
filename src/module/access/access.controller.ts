@@ -6,23 +6,19 @@ import {
     UseFilters,
     UseGuards,
     UseInterceptors,
-    Headers,
 } from '@nestjs/common';
 
 import { AccessService } from '@module/access/access.service';
 import { LoginShopDto, RegisterShopDto } from '@module/shop/dto/shop.dto';
 import {
-    ApiBearerAuth,
     ApiExtraModels,
-    ApiHeader,
     ApiOkResponse,
-    ApiResponse,
     ApiTags,
     getSchemaPath,
 } from '@nestjs/swagger';
 import { BaseResult } from '@helper/base-result';
 import { HttpExceptionFilter } from '@helper/exception-filter';
-import { Shop } from '@module/shop/schema/shop.schema';
+import { Shop } from '@module/shop/entity/shop.schema';
 import { EncodeDataInterceptor } from 'interceptor/encode-data';
 import { AuthGuard } from '@guard/auth.guard';
 import { HandleRefreshTokenDto } from './dto/access.dto';
@@ -69,16 +65,25 @@ export class AccessController {
     }
 
     /**
-        lOGOUT SHOP
+        LOGOUT SHOP
      */
     @Post('logout')
     @UseGuards(AuthGuard)
-    Logout(@Req() keyStore) {
-        return this.accessService.logout(keyStore);
+    @ApiOkResponse({
+        schema: {
+            $ref: getSchemaPath(BaseResult),
+        },
+    })
+    Logout(@Req() req) {
+        return this.accessService.logout(req.keyStore);
     }
 
-    @Post('handle-refreshtoken')
-    @ApiBearerAuth()
+    @ApiOkResponse({
+        schema: {
+            $ref: getSchemaPath(BaseResult),
+        },
+    })
+    @Post('handle-refresh-token')
     @UseGuards(AuthGuard)
     HandleRefreshToken(@Req() data: HandleRefreshTokenDto) {
         return this.accessService.handleRefreshToken(data);

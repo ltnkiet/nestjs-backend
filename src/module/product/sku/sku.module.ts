@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SKU, SKUSchema } from './sku.schema';
+import { SKU, SKUSchema } from './entity/sku.schema';
 import { KeyModule } from '@module/key/key.module';
 import { SKUService } from './sku.service';
 

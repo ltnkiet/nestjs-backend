@@ -13,7 +13,6 @@ import { CustomJwtPayload } from '@interface/jwt-payload.interface';
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(private readonly keyService: KeyService) {}
-
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const shopId = request.headers[HEADER.CLIENT_ID];
@@ -30,6 +29,7 @@ export class AuthGuard implements CanActivate {
         if (request.headers[HEADER.REFRESHTOKEN]) {
             try {
                 const refreshToken = request.headers[HEADER.REFRESHTOKEN];
+                console.log(refreshToken);
                 const decodeShop = JWT.verify(
                     refreshToken,
                     keyStore.privateKey,
@@ -59,7 +59,7 @@ export class AuthGuard implements CanActivate {
                 accessToken,
                 keyStore.publicKey,
             ) as CustomJwtPayload;
-            
+
             if (shopId !== decodeShop.shopId) {
                 throw new UnauthorizedException('Invalid shopId');
             }

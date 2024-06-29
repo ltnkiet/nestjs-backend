@@ -12,7 +12,7 @@
         "start:dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
         "dev:start": "nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node dist/main",
+        "start:prod": "node distnpm /main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest",
         "test:watch": "jest --watch",

@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SPUDto } from './dto/spu.dto';
-import { SPU, SPUDocument } from './schema/spu.schema';
+import { SPU, SPUDocument } from './entity/spu.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ShopRepository } from '@module/shop/shop.repository';
+import { ShopRepository } from '@module/shop/entity/shop.repository';
 import { randomProductId } from '@utils/random-id';
 import { SKUService } from '../sku/sku.service';
 
@@ -13,8 +13,7 @@ export class SPUService {
         @InjectModel(SPU.name) private SPUModel: Model<SPUDocument>,
         private readonly shopRepository: ShopRepository,
         private readonly skuService: SKUService,
-    ) {
-    }
+    ) {}
 
     async newSpu(data: SPUDto) {
         const foundShop = await this.shopRepository.findById({
@@ -30,7 +29,6 @@ export class SPUService {
         if (spu && data.sku_list.length > 0) {
             this.skuService.newSku(spu.product_id, data.sku_list).then();
         }
-
-        return !!spu;
+        return spu;
     }
 }

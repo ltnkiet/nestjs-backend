@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { KeyDocument, Key } from '@module/key/schema/key.schema';
+import { KeyDocument, Key } from '@module/key/entity/key.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateKeyDto } from '@module/key/dto/key.dto';
 import { Types } from 'mongoose';

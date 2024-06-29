@@ -1,39 +1,39 @@
-import { ApiProperty } from "@nestjs/swagger"
-import { IsEmail, IsNotEmpty, MinLength } from "class-validator"
+import { ApiProperty } from '@nestjs/swagger';
+import {
+    IsEmail,
+    IsNotEmpty,
+    IsOptional,
+    IsStrongPassword,
+} from 'class-validator';
 
 class RegisterShopDto {
     @IsNotEmpty()
     @ApiProperty()
-    name: string
-  
+    name: string;
+
     @IsEmail()
     @ApiProperty()
-    email: string
-  
-    @MinLength(8)
+    email: string;
+
+    @IsStrongPassword()
     @ApiProperty()
-    password: string
+    password: string;
 
     @ApiProperty()
-    roles: [string]
+    roles: [string];
 }
 
 class LoginShopDto {
-    refreshToken: null
-  
+    @IsOptional()
+    refreshToken: null;
+
     @IsEmail()
     @ApiProperty()
-    email: string
-  
-    @MinLength(8)
+    email: string;
+
+    // @IsStrongPassword()
     @ApiProperty()
-    password: string
+    password: string;
 }
 
-class findShopDto {
-    @IsEmail()
-    @ApiProperty()
-    email: string
-}
-
-export { RegisterShopDto, LoginShopDto, findShopDto }
+export { RegisterShopDto, LoginShopDto };

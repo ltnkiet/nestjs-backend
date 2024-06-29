@@ -5,9 +5,9 @@ class CreateTokenDto {
 }
 
 class HandleRefreshTokenDto {
-    refreshToken: string
-    shop: any
-    keyStore: any
+    refreshToken: string;
+    shop: any;
+    keyStore: any;
 }
 
-export { CreateTokenDto, HandleRefreshTokenDto }
+export { CreateTokenDto, HandleRefreshTokenDto };
